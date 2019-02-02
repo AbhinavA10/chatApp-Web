@@ -7,9 +7,9 @@ $(function () { // the $() indicates jQuery function
     var send_username = $("#send_username")
     var chatroom = $("#chatroom")
     var feedback = $("#feedback")
-    var typing = false;
+    var userIsTyping = false;
     var timeout = undefined;
-    var typing = false;
+    var userIsTyping = false;
     var timeout = undefined;
 
     send_username.click(function () { // when the user clicks on the change username button, send a message to server through socket
@@ -21,7 +21,6 @@ $(function () { // the $() indicates jQuery function
 
     socket.on("new_message", (data) => { // listen for a new message, and when triggered, display the new message on local user's screen
         console.log(data);
-        feedback.replaceWith("");
         chatroom.append("<p class = 'message'>" + data.username + ":  " + data.message + "</p>");
 
     });
@@ -33,9 +32,8 @@ $(function () { // the $() indicates jQuery function
         $("#message").val(""); // to clear input text field when button is pressed
     });
     message.bind("keypress", () => { // send a message to server that current user is typing
-        //socket.emit('typing');
-        if (typing == false) {
-            typing = true
+        if (!userIsTyping) {
+            userIsTyping = true
             socket.emit('typing');
             timeout = setTimeout(timeoutFunction, 1000);
         } else {
@@ -44,7 +42,7 @@ $(function () { // the $() indicates jQuery function
         }
     });
     socket.on('typing', (data) => { // get info if another user is typing
-        $("#feedback").html("<p><i>" + data.username + " is typing a message..." + "</i></p>");
+        $("#feedback").html("<p><b>" + data.username + " </b> <i> is typing a message... </i></p>");
     });
 
     socket.on('no_longer_typing', (data) => { // get info if another user has stopped typing
@@ -53,7 +51,7 @@ $(function () { // the $() indicates jQuery function
     });
 
     function timeoutFunction() {
-        typing = false;
+        userIsTyping = false;
         socket.emit('no_longer_typing');
         console.log("current user not typing");
     }

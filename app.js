@@ -1,5 +1,5 @@
 // This is a file for the server-side
-// Import statments
+
 const express = require('express');
 const app = express();
 
